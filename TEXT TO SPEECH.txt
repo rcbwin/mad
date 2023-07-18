@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="27dp"
+        android:layout_marginBottom="494dp"
+        android:text="TEXT TO SPEECH APPLICATION"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/edittext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="81dp"
+        android:layout_marginBottom="397dp"
+        android:ems="12"
+        android:hint="Enter the text to be converted"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="154dp"
+        android:layout_marginBottom="293dp"
+        android:text="convert"
+        android:onClick="convert"/>
+
+</RelativeLayout>
+
+//JAVA 
+
+
+package com.example.b2texttospeech;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import java.util.Locale;
+
+public class MainActivity extends AppCompatActivity {
+    EditText e1;
+    TextToSpeech t1;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        e1=findViewById(R.id.edittext);
+        t1=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+                if (i!=TextToSpeech.ERROR){
+                    t1.setLanguage(Locale.UK);
+                }
+            }
+        });
+    }
+
+
+    public void convert(View view) {
+        String texttospeech = e1.getText().toString();
+        if (texttospeech.isEmpty()){
+            String s="Please Enter text and continue";
+            t1.speak(s,TextToSpeech.QUEUE_FLUSH,null,null);
+        }
+        else
+            t1.speak(texttospeech,TextToSpeech.QUEUE_FLUSH,null,null);
+    }
+}
+

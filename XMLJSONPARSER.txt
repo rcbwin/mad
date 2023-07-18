@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="XML JSON PARSER"
+        android:textSize="30sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="40dp"
+        android:text="PARSE XML"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="40dp"
+        android:text="PARSE JSON"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:text="DISPLAY THE CONTENTS OF XML AND JSON HERE"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+city.xml:
+
+<?xml version="1.0" ?>
+<records>
+    <place>
+        <cityname>Kolhapur</cityname>
+        <lat>68.50</lat>
+        <long>89.70</long>
+        <temp>22</temp>
+        <humidity>90%</humidity>
+    </place>
+</records>
+
+city1.json:
+
+[
+  {
+    "name": "Kolhapur",
+    "lat": "68.50",
+    "long": "89.70",
+    "temp": "22",
+    "humidity": "90%"
+  }
+]
+
+
+package com.example.xmljsonparser;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+public class MainActivity extends AppCompatActivity {
+    Button btnParseXml, btnParseJson;
+    TextView textView;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        btnParseXml=findViewById(R.id.button);
+        btnParseJson=findViewById(R.id.button2);
+        textView=findViewById(R.id.textView2);
+
+        btnParseXml.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                parseXML();
+            }
+        });
+
+        btnParseJson.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                parseJSON();
+            }
+        });
+    }
+
+    public void parseXML() {
+        try {
+            InputStream is =getAssets().open("city.xml");
+            DocumentBuilderFactory documentBuilderFactory=DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder=documentBuilderFactory.newDocumentBuilder();
+            Document document=documentBuilder.parse(is);
+            StringBuilder stringBuilder=new StringBuilder();
+            stringBuilder.append("XML DATA");
+            stringBuilder.append("\n------------------");
+            NodeList nodeList=document.getElementsByTagName("place");
+            for (int i=0;i<nodeList.getLength();i++){
+                Node node=nodeList.item(i);
+                if (node.getNodeType()==Node.ELEMENT_NODE){
+                    Element element=(Element) node;
+                    stringBuilder.append("\nName: ").append(element.getElementsByTagName("name").item(0).getTextContent());
+                    stringBuilder.append("\nLattitude: ").append(element.getElementsByTagName("lattitude").item(0).getTextContent());
+                    stringBuilder.append("\nLongitude: ").append(element.getElementsByTagName("longitude").item(0).getTextContent());
+                    stringBuilder.append("\nTempereature: ").append(element.getElementsByTagName("temperature").item(0).getTextContent());
+                    stringBuilder.append("\nHumidity: ").append(element.getElementsByTagName("humidity").item(0).getTextContent());
+                }
+            }
+            textView.setText(stringBuilder.toString());
+
+        } catch (IOException | ParserConfigurationException | SAXException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void parseJSON() {
+        String json;
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            InputStream is =getAssets().open("city.json");
+            int size=is.available();
+            byte[] buffer=new byte[size];
+            is.read(buffer);
+            json =new String(buffer, StandardCharsets.UTF_8);
+            JSONArray jsonArray=new JSONArray(json);
+            stringBuilder.append("JSON DATA");
+            stringBuilder.append("\n-------------------");
+            for (int i=0;i<jsonArray.length();i++){
+                JSONObject jsonObject=jsonArray.getJSONObject(i);
+                stringBuilder.append("\nName: ").append(jsonObject.getString("name"));
+                stringBuilder.append("\nLattitude: ").append(jsonObject.getString("Latitude"));
+                stringBuilder.append("\nLongitude: ").append(jsonObject.getString("Longitude"));
+                stringBuilder.append("\nTemperature: ").append(jsonObject.getString("Temperature"));
+                stringBuilder.append("\nHumidity: ").append(jsonObject.getString("Humidity")).append("\n");
+            }
+            textView.setText(stringBuilder.toString());
+            is.close();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+}
