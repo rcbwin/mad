@@ -45,7 +45,7 @@
 
 </RelativeLayout>
 
-//JAVA 
+//JAVA CODE
 
 
 package com.example.b2texttospeech;
