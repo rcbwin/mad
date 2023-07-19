@@ -50,8 +50,7 @@
 
 </RelativeLayout>
 
-//COUNTER
-
+// JAVA COUNTER
 package com.example.b1counterapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
